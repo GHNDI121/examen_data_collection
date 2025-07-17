@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from scraping import scrape_annonces
 import streamlit.components.v1 as components
-from visualisation import Visualisation
+from visualisation import Visualisation, traitement_de_donnees
 
 # En-tête principal
 st.markdown("<h1 style='text-align: center; color: black;'>DATA APP : Ghoulam Ndiaye</h1>", unsafe_allow_html=True)
@@ -102,18 +102,31 @@ elif page == "Visualisation":
         cette page vous permet de visualiser les données scrappées par selenium sur les motos et autos de Dakar-auto.
         * **Data source:** [Dakar-auto](https://dakar-auto.com/)
         """)
+
     source = st.selectbox("Choisir une source", ["Voitures", "Motos", "Locations"])
 
-    if source == "Voitures" and 'voitures_data' in st.session_state:
-        df = st.session_state['voitures_data']
-    elif source == "Motos" and 'motos_data' in st.session_state:
-        df = st.session_state['motos_data']
-    elif source == "Locations" and 'locations_data' in st.session_state:
-        df = st.session_state['locations_data']
+    if source == "Voitures":
+        df = pd.read_csv('data/vente_auto.csv')
+        df = traitement_de_donnees(df)
+        df = pd.DataFrame(df)[[
+            'marque', 'année', 'prix', 'adresse', 'kilométrage', 'boite', 'carburant', 'propriétaire'
+        ]]
+    elif source == "Motos":
+        df = pd.read_csv('data/vente_moto.csv')
+        df = traitement_de_donnees(df)
+        df = pd.DataFrame(df)[[
+            'marque', 'année', 'prix', 'adresse', 'kilométrage', 'propriétaire'
+        ]]
+    elif source == "Locations":
+        df = pd.read_csv('data/location_auto.csv')
+        df = traitement_de_donnees(df)
+        df = pd.DataFrame(df)[[
+            'marque', 'année', 'prix', 'adresse', 'propriétaire'
+        ]]
     else:
-        st.warning("Aucune donnée disponible. Veuillez d'abord scraper les données dans l'onglet 'Scraping'.")
+        st.warning("Aucune donnée disponible.")
         st.stop()
-        
+
     vis = Visualisation(df)
 
     st.subheader("Aperçu des données")
@@ -126,7 +139,7 @@ elif page == "Visualisation":
     st.line_chart(vis.repartition_annees())
 
     fig = vis.plot_distribution_kilometrage()
-    if fig:
+    if fig is not None:
         st.subheader("Distribution du kilométrage")
         st.pyplot(fig)
     else:
