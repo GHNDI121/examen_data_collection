@@ -33,47 +33,30 @@ def traitement_de_donnees(df):
     if 'prix' in df.columns:
         df['prix'] = df['prix'].apply(lambda x: int(re.sub(r'[^\d]', '', x)) if isinstance(x, str) and re.sub(r'[^\d]', '', x) != '' else None)
 
-    # Fusion et nettoyage des variantes de colonne année
-    annee_cols = [col for col in df.columns if col.lower() in ['année', 'annee']]
-    if annee_cols:
-        # On crée une nouvelle colonne 'année' en priorisant la première colonne non nulle trouvée
-        def extract_annee(row):
-            for col in annee_cols:
-                val = row[col]
-                if pd.notnull(val):
-                    if isinstance(val, int):
-                        return val
-                    match = re.search(r'\d{4}', str(val))
-                    if match:
-                        return int(match.group())
-            return None
-        df['année'] = df.apply(extract_annee, axis=1)
-        # Supprimer toutes les autres colonnes année/annee sauf 'année'
-        for col in annee_cols:
-            if col != 'année':
-                df.drop(columns=col, inplace=True)
-
+    # Gestion des variantes de colonne année
+    annee_col = None
+    for col in df.columns:
+        if col.lower() in ['année', 'annee', 'année', 'annee']:
+            annee_col = col
+            break
+    if annee_col:
+        df['année'] = df[annee_col].apply(lambda x: int(re.search(r'\d{4}', str(x)).group()) if isinstance(x, str) and re.search(r'\d{4}', str(x)) else None)
     # Gestion des variantes de colonne 'kilométrage'
-    km_cols = [col for col in df.columns if col.lower() in ['kilométrage', 'kilometrage']]
-    if km_cols:
-        def extract_km(row):
-            for col in km_cols:
-                val = row[col]
-                if pd.notnull(val):
-                    if isinstance(val, int):
-                        return val
-                    match = re.search(r'\d+', str(val).replace(" ", ""))
-                    if match:
-                        return int(match.group())
-            return None
-        df['kilométrage'] = df.apply(extract_km, axis=1)
-        for col in km_cols:
-            if col != 'kilométrage':
-                df.drop(columns=col, inplace=True)
+    km_col = next((col for col in df.columns if col.lower() in ['kilométrage', 'kilometrage']), None)
+    # Nettoyage de la colonne 'kilométrage'
+    if km_col:
+        df['kilométrage'] = df[km_col].apply(
+            lambda x: int(re.search(r'\d+', str(x).replace(" ", "")).group()) if isinstance(x, str) and re.search(r'\d+', str(x).replace(" ", "")) else None
+        )
 
     # Liste des colonnes à afficher (seulement celles présentes)
     colonnes_affichage = [c for c in [
-        "marque", "année", "prix", "adresse", "kilométrage", "boite", "carburant", "propriétaire"
+        "marque", "année", "annee", "prix", "adresse", "kilométrage", "boite", "carburant", "propriétaire"
     ] if c in df.columns]
 
+    # Si 'année' a été créée à partir de 'annee', on préfère afficher 'année'
+    if 'année' in df.columns and 'annee' in colonnes_affichage:
+        colonnes_affichage = [c for c in colonnes_affichage if c != 'annee']
+
     return df[colonnes_affichage]
+
