@@ -105,24 +105,26 @@ elif page == "Visualisation":
 
     source = st.selectbox("Choisir une source", ["Voitures", "Motos", "Locations"])
 
+
+    colonnes_voitures = ['marque', 'année', 'prix', 'adresse', 'kilométrage', 'boite', 'carburant', 'propriétaire']
+    colonnes_motos = ['marque', 'année', 'prix', 'adresse', 'kilométrage', 'propriétaire']
+    colonnes_locations = ['marque', 'année', 'prix', 'adresse', 'propriétaire']
+
     if source == "Voitures":
         df = pd.read_csv('data/vente_auto.csv')
         df = traitement_de_donnees(df)
-        df = pd.DataFrame(df)[[
-            'marque', 'année', 'prix', 'adresse', 'kilométrage', 'boite', 'carburant', 'propriétaire'
-        ]]
+        colonnes = [c for c in colonnes_voitures if c in df.columns]
+        df = df[colonnes]
     elif source == "Motos":
         df = pd.read_csv('data/vente_moto.csv')
         df = traitement_de_donnees(df)
-        df = pd.DataFrame(df)[[
-            'marque', 'année', 'prix', 'adresse', 'kilométrage', 'propriétaire'
-        ]]
+        colonnes = [c for c in colonnes_motos if c in df.columns]
+        df = df[colonnes]
     elif source == "Locations":
         df = pd.read_csv('data/location_auto.csv')
         df = traitement_de_donnees(df)
-        df = pd.DataFrame(df)[[
-            'marque', 'année', 'prix', 'adresse', 'propriétaire'
-        ]]
+        colonnes = [c for c in colonnes_locations if c in df.columns]
+        df = df[colonnes]
     else:
         st.warning("Aucune donnée disponible.")
         st.stop()
