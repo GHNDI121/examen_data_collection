@@ -4,14 +4,14 @@ from scraping import scrape
 import streamlit.components.v1 as components
 from visualisation import Visualisation, traitement_de_donnees
 
-# En-tête principal
+
 st.markdown("<h1 style='text-align: center; color: black;'>DATA APP : Ghoulam Ndiaye</h1>", unsafe_allow_html=True)
 
 
-# Menu latéral
+
 page = st.sidebar.selectbox("Menu", ["Données Stockées", "Scraping", "Formulaire", "Visualisation"])
 
-# Fonction de loading des données
+
 def load_(dataframe, title, key) :
     st.markdown("""
     <style>
@@ -24,7 +24,7 @@ def load_(dataframe, title, key) :
         st.write('Data dimension: ' + str(dataframe.shape[0]) + ' rows and ' + str(dataframe.shape[1]) + ' columns.')
         st.dataframe(dataframe)
 
-# définir quelques styles liés aux box
+
 st.markdown('''<style> .stButton>button {
     font-size: 12px;
     height: 3em;
@@ -32,7 +32,7 @@ st.markdown('''<style> .stButton>button {
 }</style>''', unsafe_allow_html=True)
 
 
-# PAGE 1 : Données stockées
+
 if page == "Données Stockées":
     st.markdown("""
     cette page vous permet de télécharger les données scrappées par web-scraper sur les motos et autos de Dakar-auto.
@@ -43,17 +43,17 @@ if page == "Données Stockées":
     load_(pd.read_csv('data/vente_moto.csv'), 'vente_moto', '3')
     
 
-# PAGE 2 : Scraping
+
 elif page == "Scraping":
     st.markdown("""
-    cette page vous permet de scraper les données sur les motos et autos de Dakar-auto grace à selenium tout en indexant le nombre de page que nous voulons scraper.
+    cette page vous permet de scraper les données sur les motos et autos de Dakar-auto grace à beautifulsoup4 tout en indexant le nombre de page que nous voulons scraper.
     * **Python libraries:** base64, pandas, streamlit  
     * **Data source:** [Dakar-auto](https://dakar-auto.com/)
     """)
 
-    # Input nombre de pages par catégorie
+    
     nb_voitures = st.number_input("Pages à scraper (voitures)", 1, 2753, 1, key="pages_voitures")
-    # --- Scraping Voitures ---
+    
     if st.button("Scraper les VOITURES", key="scrape_voitures"):
         url_voitures = 'https://dakar-auto.com/senegal/voitures-4?page='
         data_voitures = scrape(url_voitures, nb_voitures)
@@ -64,7 +64,7 @@ elif page == "Scraping":
         st.dataframe(df_voitures)
         
     nb_motos = st.number_input("Pages à scraper (motos)", 1, 54, 1, key="pages_motos")
-    # --- Scraping Motos ---
+    
     if st.button("Scraper les MOTOS", key="scrape_motos"):
         url_motos = 'https://dakar-auto.com/senegal/motos-and-scooters-3?page='
         data_motos = scrape(url_motos, nb_motos)
@@ -75,7 +75,7 @@ elif page == "Scraping":
         st.dataframe(df_motos)
         
     nb_location = st.number_input("Pages à scraper (location)", 1, 8, 1, key="pages_location")
-    # --- Scraping Location ---
+   
     if st.button("Scraper la LOCATION", key="scrape_location"):
         url_location = 'https://dakar-auto.com/senegal/location-de-voitures-19?page='
         data_location = scrape(url_location, nb_location)
@@ -85,7 +85,7 @@ elif page == "Scraping":
         st.session_state['location_data'] = df_location
         st.dataframe(df_location)
 
-# PAGE 3 : Formulaire
+
 elif page == "Formulaire":
     st.markdown("""
         cette page vous permet de remplir un formulaire dans le but d'etre recontacter afin de vous aider dans votre projet d'achat ou de location de véhicule.
@@ -96,7 +96,7 @@ elif page == "Formulaire":
         height=700
     )
 
-# PAGE 4 : visualisation
+
 elif page == "Visualisation":
     st.markdown("""
         cette page vous permet de visualiser les données scrappées par selenium sur les motos et autos de Dakar-auto.
@@ -142,7 +142,7 @@ elif page == "Visualisation":
 
     fig = vis.plot_distribution_kilometrage()
     if fig is not None:
-        st.subheader("Distribution du kilométrage")
+        st.subheader("Moyenne du kilométrage par année")
         st.pyplot(fig)
     else:
         st.warning("Aucune donnée de kilométrage disponible.")

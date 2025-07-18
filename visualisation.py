@@ -17,9 +17,17 @@ class Visualisation:
         return pd.Series()
 
     def plot_distribution_kilometrage(self):
-        if 'kilométrage' in self.df.columns:
-            fig, ax = plt.subplots()
-            sns.histplot(self.df['kilométrage'], bins=30, kde=True, ax=ax)
+        if 'kilométrage' in self.df.columns and 'année' in self.df.columns:
+            df_plot = self.df.dropna(subset=['kilométrage', 'année'])
+            if df_plot.empty:
+                return None
+            # Calcul de la moyenne du kilométrage par année
+            km_par_annee = df_plot.groupby('année')['kilométrage'].mean().sort_index()
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.barplot(x=km_par_annee.index.astype(int), y=km_par_annee.values, ax=ax, palette='tab10')
+            ax.set_title('Moyenne du kilométrage par année')
+            ax.set_xlabel('Année')
+            ax.set_ylabel('Kilométrage moyen')
             return fig
         return None
 
