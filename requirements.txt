@@ -7,5 +7,4 @@ pandas
 streamlit
 seaborn
 pybase64
-selenium
 webdriver_manager

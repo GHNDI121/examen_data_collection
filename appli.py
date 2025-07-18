@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from scraping import scrape_annonces
+from scraping import scrape
 import streamlit.components.v1 as components
 from visualisation import Visualisation, traitement_de_donnees
 
@@ -56,7 +56,7 @@ elif page == "Scraping":
     # --- Scraping Voitures ---
     if st.button("Scraper les VOITURES", key="scrape_voitures"):
         url_voitures = 'https://dakar-auto.com/senegal/voitures-4?page='
-        data_voitures = scrape_annonces(url_voitures, nb_voitures)
+        data_voitures = scrape(url_voitures, nb_voitures)
         df_voitures = pd.DataFrame(data_voitures)[[
             'marque', 'année', 'prix', 'adresse', 'kilométrage', 'boite', 'carburant', 'propriétaire'
         ]]
@@ -67,7 +67,7 @@ elif page == "Scraping":
     # --- Scraping Motos ---
     if st.button("Scraper les MOTOS", key="scrape_motos"):
         url_motos = 'https://dakar-auto.com/senegal/motos-and-scooters-3?page='
-        data_motos = scrape_annonces(url_motos, nb_motos)
+        data_motos = scrape(url_motos, nb_motos)
         df_motos = pd.DataFrame(data_motos)[[
             'marque', 'année', 'prix', 'adresse', 'kilométrage', 'propriétaire'
         ]]
@@ -78,7 +78,7 @@ elif page == "Scraping":
     # --- Scraping Location ---
     if st.button("Scraper la LOCATION", key="scrape_location"):
         url_location = 'https://dakar-auto.com/senegal/location-de-voitures-19?page='
-        data_location = scrape_annonces(url_location, nb_location)
+        data_location = scrape(url_location, nb_location)
         df_location = pd.DataFrame(data_location)[[
             'marque', 'année', 'prix', 'adresse', 'propriétaire'
         ]]
