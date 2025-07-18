@@ -77,4 +77,3 @@ def traitement_de_donnees(df):
     ] if c in df.columns]
 
     return df[colonnes_affichage]
-
